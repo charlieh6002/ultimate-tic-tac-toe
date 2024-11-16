@@ -1,0 +1,484 @@
+#tic tac toe using 9 squares (with 9 games inside)
+
+import pygame 
+import random
+
+num = random.randint(0,1)
+if num == 0:
+    xturn = True
+elif num == 1:
+    xturn = False
+
+changeturn = False
+screenwidth = 768
+screenheight = 768
+pygame.init()
+runningmain = True
+xwins = False
+owins = False
+xwinstotal = False
+owinstotal = False
+clock = pygame.time.Clock()
+window = pygame.display.set_mode(( screenwidth, screenheight))
+listx = [" ", " ", " ",
+         " ", " ", " ",
+         " ", " ", " "]
+
+listo = [" ", " ", " ",
+         " ", " ", " ",
+         " ", " ", " "]
+
+class Grid():
+    def __init__(self):
+        self.x1 =  screenwidth / 3
+        self.x2 = (screenwidth / 3) * 2
+        self.y1 = screenheight / 3
+        self.y2 = (screenheight / 3) * 2
+        self.pos = 5
+        self.mainlist = [" ", " ", " ",
+                         " ", " ", " ",
+                         " ", " ", " "]
+        self.isrunning = True
+        self.coordsgridx = [[ (0,0), (screenwidth/3, screenheight/3), (0, screenheight/3), (screenwidth/3, 0)], #pos 0
+                            [ (screenwidth/3, 0), (screenwidth/3 * 2, screenheight/3), (screenwidth/3, screenheight/3), (screenwidth/3 * 2, 0)],
+                            [ (screenwidth/3 * 2, 0), (screenwidth, screenheight/3), (screenwidth/3 * 2, screenheight/3), (screenwidth, 0)],
+                            [ (0,screenheight / 3), (screenwidth/3, screenheight/3 * 2), (0, screenheight/3 * 2), (screenwidth/3, screenheight / 3)], #pos 4
+                            [ (screenwidth/3, screenheight/3), (screenwidth/3 * 2, screenheight/3 * 2), (screenwidth/3, screenheight/3 * 2), (screenwidth/3 * 2, screenheight / 3)], 
+                            [ (screenwidth/3 * 2, screenheight/3), (screenwidth, screenheight/3 * 2), (screenwidth/3 * 2, screenheight/3 * 2), (screenwidth, screenheight/ 3)],
+                            [ (0,screenheight/3 * 2), (screenwidth/3, screenheight), (0, screenheight), (screenwidth/3, screenheight/3 * 2)], #pos 7
+                            [ (screenwidth/3, screenheight/3 * 2), (screenwidth/3 * 2, screenheight), (screenwidth/3, screenheight), (screenwidth/3 * 2, screenheight / 3 * 2)], 
+                            [ (screenwidth/3 * 2, screenheight/3 * 2), (screenwidth, screenheight), (screenwidth/3 * 2, screenheight), (screenwidth, screenheight/ 3 * 2) ]
+                            ]
+        
+        self.coordsgrido = [[ (screenwidth/6, screenheight/6),],
+                            [ (screenwidth/6 * 3, screenheight/6),],
+                            [ (screenwidth/6 * 5, screenheight/6),],
+                            [ (screenwidth/6, screenheight/6 * 3),],
+                            [ (screenwidth/6 * 3, screenheight/6 * 3),],
+                            [ (screenwidth/6 * 5, screenheight/6 * 3),],
+                            [ (screenwidth/6, screenheight/6 * 5),],
+                            [ (screenwidth/6 * 3, screenheight/6 * 5),],
+                            [ (screenwidth/6 * 5, screenheight/6 * 5),],
+                            ]
+    def drawgrid(self):
+        pygame.draw.line(window, (0,0,0), (self.x1, 0), (self.x1, screenheight), width=5)
+        pygame.draw.line(window, (0,0,0), (self.x2, 0), (self.x2, screenheight), width=5)
+        pygame.draw.line(window, (0,0,0), (0, self.y1), (screenwidth, self.y1), width=5)
+        pygame.draw.line(window, (0,0,0), (0, self.y2), (screenwidth, self.y2), width=5)
+
+    def add(self, pos, xo):
+        self.mainlist[pos - 1] = xo
+        print(self.mainlist)
+
+    def returnlist(self):
+        return self.mainlist
+
+    def drawx(self):
+        for i in range (0, 9, 1):
+            if self.mainlist[i] == "x":
+                pygame.draw.line(window, (0,0,0), self.coordsgridx[i][0], self.coordsgridx[i][1], width= 20)
+                pygame.draw.line(window, (0,0,0), self.coordsgridx[i][2], self.coordsgridx[i][3], width= 20)
+                
+                
+    def drawo(self):
+        for i in range (0, 9, 1):
+            if self.mainlist[i] == "o":
+                pygame.draw.circle(window, (0,0,0), self.coordsgrido[i][0], 128, width = 20)
+
+    def running(self, bool):
+        if bool:
+            self.isrunning = True
+        elif not bool:
+            self.isrunning  = False
+        self.pos = 5
+    
+    def returnrunning(self):
+        if self.isrunning:
+            return True
+        else:
+            return False
+        
+    def checkx(self):
+        xwinstotal = False
+        print(listx)
+        if self.mainlist[0]  == "x" and self.mainlist[1] == "x" and self.mainlist[2] == "x":
+            xwinstotal = True
+        elif self.mainlist[0] == "x" and self.mainlist[3] == "x" and self.mainlist[6] == "x":
+            xwinstotal = True
+        elif self.mainlist[0] == "x" and self.mainlist[4] == "x" and self.mainlist[8] == "x":
+            xwinstotal = True
+        elif self.mainlist[1] == "x" and self.mainlist[4] == "x" and self.mainlist[7] == "x":
+            xwinstotal = True
+        elif self.mainlist[2] == "x" and self.mainlist[4] == "x" and self.mainlist[6] == "x":
+            xwinstotal = True
+        elif self.mainlist[2] == "x" and self.mainlist[5] == "x" and self.mainlist[8] == "x":
+            xwinstotal = True
+        elif self.mainlist[3] == "x" and self.mainlist[4] == "x" and self.mainlist[5] == "x":
+            xwinstotal = True
+        elif self.mainlist[6] == "x" and self.mainlist[7] == "x" and self.mainlist[8] == "x":
+            xwinstotal = True
+        if xwinstotal:
+            endscreen.genText("x")
+            self.isrunning = False
+
+    def checko(self):
+        owinstotal = False
+        print(listx)
+        if self.mainlist[0]  == "o" and self.mainlist[1] == "o" and self.mainlist[2] == "o":
+            owinstotal = True
+        elif self.mainlist[0] == "o" and self.mainlist[3] == "o" and self.mainlist[6] == "o":
+            owinstotal = True
+        elif self.mainlist[0] == "o" and self.mainlist[4] == "o" and self.mainlist[8] == "o":
+            owinstotal = True
+        elif self.mainlist[1] == "o" and self.mainlist[4] == "o" and self.mainlist[7] == "o":
+            owinstotal = True
+        elif self.mainlist[2] == "o" and self.mainlist[4] == "o" and self.mainlist[6] == "o":
+            owinstotal = True
+        elif self.mainlist[2] == "o" and self.mainlist[5] == "o" and self.mainlist[8] == "o":
+            owinstotal = True
+        elif self.mainlist[3] == "o" and self.mainlist[4] == "o" and self.mainlist[5] == "o":
+            owinstotal = True
+        elif self.mainlist[6] == "o" and self.mainlist[7] == "o" and self.mainlist[8] == "o":
+            owinstotal = True
+        if owinstotal:
+            endscreen.genText("o")
+            self.isrunning = False
+
+        
+
+class End():
+    def __init__(self):
+        self.isrunning = False
+
+    def genText(self, xo):
+        self.isrunning = True
+        self.won = xo
+        self.won = xo
+        self.message = xo + " wins"
+        self.messageFont = pygame.font.Font("/Users/charliehaddock/Library/Fonts/Pixeboy-z8XGD.ttf", 100)
+        self.messageText = self.messageFont.render(self.message, True, (0,0,0))
+        self.messageRect = self.messageText.get_rect(center= (screenwidth/2, screenheight/2))
+
+    def blitMessage(self):
+        window.blit(self.messageText, self.messageRect)
+    
+    def running(self):
+        if self.isrunning:
+            return True
+        elif not self.isrunning:
+            return False
+
+class Cursor():
+    def __init__(self):
+        self.x1 = 0
+        self.x2 = screenwidth / 3
+        self.x3 = (screenwidth / 3) * 2
+        self.x4 = screenwidth
+        
+        self.y1 = 0
+        self.y2 = screenheight / 3
+        self.y3 = (screenheight / 3) * 2
+        self.y4 = screenheight
+        
+    def drawcursor(self, pos, xturn):
+        if xturn:
+            color = "blue"
+        elif not xturn:
+            color = "red"
+        if pos == 1:
+            pygame.draw.lines( window, color, True, ((self.x1, self.y1), (self.x2, self.y1,), (self.x2, self.y2), (self.x1, self.y2)), width = 7)
+            pygame.draw.lines( window, (200,200,200), True, ((self.x1 + 7, self.y1 + 7), (self.x2 - 7, self.y1 + 7), (self.x2 - 7, self.y2 - 7), (self.x1 + 7, self.y2 - 7)), width = 3)
+        if pos == 2:
+            pygame.draw.lines( window, color, True, ((self.x2, self.y1), (self.x3, self.y1,), (self.x3, self.y2), (self.x2, self.y2)), width = 7)
+            pygame.draw.lines( window, (200,200,200), True, ((self.x2 + 7, self.y1 + 7), (self.x3 - 7, self.y1 + 7), (self.x3 - 7, self.y2 - 7), (self.x2 + 7, self.y2 - 7)), width = 3)
+        if pos == 3:
+            pygame.draw.lines( window, color, True, ((self.x3, self.y1), (self.x4, self.y1,), (self.x4, self.y2), (self.x3, self.y2)), width = 7)
+            pygame.draw.lines( window, (200,200,200), True, ((self.x3 + 7, self.y1 + 7), (self.x4 - 7, self.y1 + 7), (self.x4 - 7, self.y2 - 7), (self.x3 + 7, self.y2 - 7)), width = 3)
+        if pos == 4:
+            pygame.draw.lines( window, color, True, ((self.x1, self.y2), (self.x2, self.y2,), (self.x2, self.y3), (self.x1, self.y3)), width = 7)
+            pygame.draw.lines( window, (200,200,200), True, ((self.x1 + 7, self.y2 + 7), (self.x2 - 7, self.y2 + 7), (self.x2 - 7, self.y3 - 7), (self.x1 + 7, self.y3 - 7)), width = 3)
+        if pos == 5:
+            pygame.draw.lines( window, color, True, ((self.x2, self.y2), (self.x3, self.y2,), (self.x3, self.y3), (self.x2, self.y3)), width = 7)
+            pygame.draw.lines( window, (200,200,200), True, ((self.x2 + 7, self.y2 + 7), (self.x3 - 7, self.y2 + 7), (self.x3 - 7, self.y3 - 7), (self.x2 + 7, self.y3 - 7)), width = 3)
+        if pos == 6:
+            pygame.draw.lines( window, color, True, ((self.x3, self.y2), (self.x4, self.y2,), (self.x4, self.y3), (self.x3, self.y3)), width = 7)
+            pygame.draw.lines( window, (200,200,200), True, ((self.x3 + 7, self.y2 + 7), (self.x4 - 7, self.y2 + 7), (self.x4 - 7, self.y3 - 7), (self.x3 + 7, self.y3 - 7)), width = 3)
+        if pos == 7:
+            pygame.draw.lines( window, color, True, ((self.x1, self.y3), (self.x2, self.y3,), (self.x2, self.y4), (self.x1, self.y4)), width = 7)
+            pygame.draw.lines( window, (200,200,200), True, ((self.x1 + 7, self.y3 + 7), (self.x2 - 7, self.y3 + 7), (self.x2 - 7, self.y4 - 7), (self.x1 + 7, self.y4 - 7)), width = 3)
+        if pos == 8:
+            pygame.draw.lines( window, color, True, ((self.x2, self.y3), (self.x3, self.y3,), (self.x3, self.y4), (self.x2, self.y4)), width = 7)
+            pygame.draw.lines( window, (200,200,200), True, ((self.x2 + 7, self.y3 + 7), (self.x3 - 7, self.y3 + 7), (self.x3 - 7, self.y4 - 7), (self.x2 + 7, self.y4 - 7)), width = 3)
+        if pos == 9:
+            pygame.draw.lines( window, color, True, ((self.x3, self.y3), (self.x4, self.y3,), (self.x4, self.y4), (self.x3, self.y4)), width = 7)
+            pygame.draw.lines( window, (200,200,200), True, ((self.x3 + 7, self.y3 + 7), (self.x4 - 7, self.y3 + 7), (self.x4 - 7, self.y4 - 7), (self.x3 + 7, self.y4 - 7)), width = 3)
+
+class miniGame(Grid, Cursor):
+    def __init__(self, gridpos):
+        self.gridpos = gridpos
+        start = random.randint(0,1)
+        if start == 0:
+            self.starting = "x"
+        if start == 1:
+            self.starting = "o"
+        Grid.__init__(self)
+        self.isrunning = False
+        self.coordsgridx = [[ (0,0), (screenwidth/3, screenheight/3), (0, screenheight/3), (screenwidth/3, 0)], #pos 0
+                            [ (screenwidth/3, 0), (screenwidth/3 * 2, screenheight/3), (screenwidth/3, screenheight/3), (screenwidth/3 * 2, 0)],
+                            [ (screenwidth/3 * 2, 0), (screenwidth, screenheight/3), (screenwidth/3 * 2, screenheight/3), (screenwidth, 0)],
+                            [ (0,screenheight / 3), (screenwidth/3, screenheight/3 * 2), (0, screenheight/3 * 2), (screenwidth/3, screenheight / 3)], #pos 4
+                            [ (screenwidth/3, screenheight/3), (screenwidth/3 * 2, screenheight/3 * 2), (screenwidth/3, screenheight/3 * 2), (screenwidth/3 * 2, screenheight / 3)], 
+                            [ (screenwidth/3 * 2, screenheight/3), (screenwidth, screenheight/3 * 2), (screenwidth/3 * 2, screenheight/3 * 2), (screenwidth, screenheight/ 3)],
+                            [ (0,screenheight/3 * 2), (screenwidth/3, screenheight), (0, screenheight), (screenwidth/3, screenheight/3 * 2)], #pos 7
+                            [ (screenwidth/3, screenheight/3 * 2), (screenwidth/3 * 2, screenheight), (screenwidth/3, screenheight), (screenwidth/3 * 2, screenheight / 3 * 2)], 
+                            [ (screenwidth/3 * 2, screenheight/3 * 2), (screenwidth, screenheight), (screenwidth/3 * 2, screenheight), (screenwidth, screenheight/ 3 * 2) ]
+                            ]
+        
+        self.coordsgrido = [[ (screenwidth/6, screenheight/6),],
+                            [ (screenwidth/6 * 3, screenheight/6),],
+                            [ (screenwidth/6 * 5, screenheight/6),],
+                            [ (screenwidth/6, screenheight/6 * 3),],
+                            [ (screenwidth/6 * 3, screenheight/6 * 3),],
+                            [ (screenwidth/6 * 5, screenheight/6 * 3),],
+                            [ (screenwidth/6, screenheight/6 * 5),],
+                            [ (screenwidth/6 * 3, screenheight/6 * 5),],
+                            [ (screenwidth/6 * 5, screenheight/6 * 5),],
+                            ]
+
+
+    def addx(self, pos):
+        count = 0
+        if listx[pos-1] and listx[pos-1] == " ":
+            listx[pos - 1] = "x"
+        if self.mainlist[pos-1] == " ":
+            self.mainlist[pos-1] = "x"
+        for i in range (0,9,1):
+            if self.mainlist[i] != " ":
+                count = count + 1
+        if count == 9:
+            maingrid.running(True)
+            self.isrunning = False
+            for j in range (0,9,1):
+                listx[j] = " "
+                listo[j] = " "
+
+        print(listx)
+
+    def addo(self, pos):
+        count = 0
+        if listo[pos-1] and listx[pos-1] == " ":
+            listo[pos - 1] = "o"
+        if self.mainlist[pos-1] == " ":
+            self.mainlist[pos-1] = "o"
+        for i in range (0,9,1):
+            if self.mainlist[i] != " ":
+                count = count + 1
+        if count == 9:
+            maingrid.running(True)
+            self.isrunning = False
+            for j in range (0,9,1):
+                listx[j] = " "
+                listo[j] = " "
+
+        print(listo)
+
+    def drawx(self):
+        for i in range (0, 9, 1):
+            if listx[i] == "x":
+                pygame.draw.line(window, (0,0,0), self.coordsgridx[i][0], self.coordsgridx[i][1], width= 20)
+                pygame.draw.line(window, (0,0,0), self.coordsgridx[i][2], self.coordsgridx[i][3], width= 20)
+                
+                
+    def drawo(self):
+        for i in range (0, 9, 1):
+            if listo[i] == "o":
+                pygame.draw.circle(window, (0,0,0), self.coordsgrido[i][0], 128, width = 20)
+
+    def checkx(self):
+        xwins = False
+        print(listx)
+        if listx[0]  == "x" and listx[1] == "x" and listx[2] == "x":
+            xwins = True
+        elif listx[0] == "x" and listx[3] == "x" and listx[6] == "x":
+            xwins = True
+        elif listx[0] == "x" and listx[4] == "x" and listx[8] == "x":
+            xwins = True
+        elif listx[1] == "x" and listx[4] == "x" and listx[7] == "x":
+            xwins = True
+        elif listx[2] == "x" and listx[4] == "x" and listx[6] == "x":
+            xwins = True
+        elif listx[2] == "x" and listx[5] == "x" and listx[8] == "x":
+            xwins = True
+        elif listx[3] == "x" and listx[4] == "x" and listx[5] == "x":
+            xwins = True
+        elif listx[6] == "x" and listx[7] == "x" and listx[8] == "x":
+            xwins = True
+        if xwins:
+            print("x wins")
+            maingrid.add(self.gridpos, "x")
+            maingrid.running(True)
+            self.isrunning = False
+            print(self.gridpos)
+            for j in range (0,9,1):
+                listx[j] = " "
+                listo[j] = " "
+            print(listx)
+
+
+    def checko(self):
+        owins = False
+        print(listo)
+        if listo[0]  == "o" and listo[1] == "o" and listo[2] == "o":
+            owins = True
+        elif listo[0] == "o" and listo[3] == "o" and listo[6] == "o":
+            owins = True
+        elif listo[0] == "o" and listo[4] == "o" and listo[8] == "o":
+            owins = True
+        elif listo[1] == "o" and listo[4] == "o" and listo[7] == "o":
+            owins = True
+        elif listo[2] == "o" and listo[4] == "o" and listo[6] == "o":
+            owins = True
+        elif listo[2] == "o" and listo[5] == "o" and listo[8] == "o":
+            owins = True
+        elif listo[3] == "o" and listo[4] == "o" and listo[5] == "o":
+            owins = True
+        elif listo[6] == "o" and listo[7] == "o" and listo[8] == "o":
+            owins = True
+        if owins:
+            print("o wins")
+            maingrid.add(self.gridpos, "o")
+            maingrid.running(True)
+            self.isrunning = False
+            print(self.gridpos)
+            for j in range (0,9,1):
+                listx[j] = " "
+                listo[j] = " "
+            
+            
+#main
+
+maingrid = Grid()
+cursor = Cursor()
+endscreen = End()
+pos = 5
+buttonpressed = False
+playing = True
+
+while playing:
+    
+    while maingrid.returnrunning():
+        print("main")
+        window.fill("white")
+        maingrid.drawx()
+        maingrid.drawo()
+        maingrid.drawgrid()
+        maingrid.checkx()
+        maingrid.checko()
+        if xturn:
+            cursor.drawcursor(pos, True)
+        elif not xturn:
+            cursor.drawcursor(pos, False)
+
+        keys = pygame.key.get_pressed()
+        clock.tick(60)
+        pygame.display.update()
+
+        for event in pygame.event.get(): #checks for ingame events eg pressing X to close window
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    if pos > 1:
+                        pos = pos - 1
+                if event.key == pygame.K_RIGHT:
+                    if pos < 9:
+                        pos = pos + 1
+                if event.key == pygame.K_UP:
+                    if pos > 3:
+                        pos = pos - 3
+                if event.key == pygame.K_DOWN:
+                    if pos < 7:
+                        pos = pos + 3
+                if event.key == pygame.K_RETURN:
+                    checklist = maingrid.returnlist()
+                    if checklist[pos-1] == " ":
+                        runningmain = False
+                        minigame = True
+                        startminigame = True
+                        game = miniGame(pos)
+                        game.running(True)
+                        print("start")
+                        maingrid.running(False)
+                        if xturn:
+                            xturn = False
+                        elif not xturn:
+                            xturn = True
+            if event.type == pygame.QUIT:
+                runningmain = False
+                mainGame = False                
+                pygame.quit()
+        
+
+    while game.returnrunning(): #minigame
+        print("mini")
+        
+        game.drawgrid()
+        maingrid.running(False)
+        if xturn:
+            cursor.drawcursor(pos, True)
+        elif not xturn:
+            cursor.drawcursor(pos, False)
+        game.checkx()
+        game.checko()
+        clock.tick(60)
+        pygame.display.update()
+
+        for event in pygame.event.get(): #checks for ingame events eg pressing X to close window
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    if pos > 1:
+                        pos = pos - 1
+                if event.key == pygame.K_RIGHT:
+                    if pos < 9:
+                        pos = pos + 1
+                if event.key == pygame.K_UP:
+                    if pos > 3:
+                        pos = pos - 3
+                if event.key == pygame.K_DOWN:
+                    if pos < 7:
+                        pos = pos + 3
+                if event.key == pygame.K_RETURN:
+                    if listx[pos-1] == " " and listo[pos-1] == " ":
+                        if xturn:
+                            if listx[pos-1] != "x" and listo[pos-1] != "o":
+                                game.addx(pos)
+                        elif not xturn:
+                            if listx[pos-1] != "x" and listo[pos-1] != "o":    
+                                game.addo(pos)
+                        changeturn = True
+            if event.type == pygame.QUIT:
+                runningmain = False
+                mainGame = False                
+                pygame.quit()
+
+        if changeturn:
+            if xturn:
+                xturn = False
+                changeturn = False
+            else:
+                xturn = True
+                changeturn = False
+        print(xturn)
+        window.fill("white")
+        game.drawx()
+        game.drawo()
+
+        
+    while endscreen.running():
+        window.fill((255,255,255))
+        endscreen.blitMessage()
+        clock.tick(60)
+        pygame.display.update()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()   
+
+
